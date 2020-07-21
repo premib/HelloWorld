@@ -2,6 +2,8 @@ package com.example.helloworld;
 
 import com.example.helloworld.service.UserService;
 import com.example.helloworld.vo.User;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,5 +46,11 @@ public class HelloWorldController {
     public User updateUser(@RequestBody User user){
 
         return service.updateUser(user.getId(), user);
+    }
+
+    @PatchMapping(path="/user/{id}", consumes =  "application/json")
+    public User updateUserContent(@PathVariable("id") String id, @RequestBody JsonPatch patch) throws JsonPatchException {
+        System.out.println(id+" "+patch);
+        return service.updateSpecific(Integer.parseInt(id), patch);
     }
 }

@@ -1,7 +1,13 @@
 package com.example.helloworld.service;
 
 import com.example.helloworld.vo.User;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import org.springframework.stereotype.Component;
+
+
 
 @Component
 public class UserServiceBaseImpl  implements UserService{
@@ -13,7 +19,7 @@ public class UserServiceBaseImpl  implements UserService{
     }
 
     @Override
-    public String addUser(User user) {
+    public String   addUser(User user) {
 
         if(User.allUsers.containsKey(user.getId())){
             return "NO";
@@ -44,5 +50,24 @@ public class UserServiceBaseImpl  implements UserService{
         }
 
         return null;
+    }
+
+    @Override
+    public User updateSpecific(int id, JsonPatch patch) throws JsonPatchException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        if(User.allUsers.containsKey(id)){
+            User ref = User.allUsers.get(id);
+            System.out.println(ref);
+            JsonNode patchedUser = patch.apply(objectMapper.convertValue(ref, JsonNode.class));
+            System.out.println(patchedUser);
+            User finalUser = objectMapper.convertValue(patchedUser, User.class);
+            System.out.print(finalUser);
+            User.allUsers.put(id, finalUser);
+            return finalUser;
+        }
+        else{
+            return new User();
+        }
+
     }
 }
